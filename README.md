@@ -1,5 +1,3 @@
-
-https://github.com/OmarMansy96/Coffee-Project/assets/79119095/765a6006-e76c-448b-8ece-72097998c6a4
 # Coffee Project 
 
 this is a Mobile Game 
