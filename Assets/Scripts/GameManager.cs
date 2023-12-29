@@ -8,16 +8,16 @@ public class GameManager : MonoBehaviour
 {
     // coffee
     [SerializeField] private List<GameObject> CoffePrefab = new List<GameObject>();
-    [SerializeField] private Color[] coffeeColors = new[] { Color.white} ;
-    
-    
+    [SerializeField] private Color[] coffeeColors = new[] { Color.white };
+
+
     public bool isMoving = false;
 
     public float counter = 0;
 
     //Timer And ImageFill
     public Slider timerImage;
-    public float totalTime = 10.0f; 
+    public float totalTime = 10.0f;
     private float currentTime;
 
     // spoon movement 
@@ -27,17 +27,17 @@ public class GameManager : MonoBehaviour
     Vector2 pos;
     Rigidbody2D rb;
     Camera cam;
-    
+    private AudioSource audio;
     private bool gameStarted;
     private bool gameEnded;
     private bool isWinning;
     [SerializeField] private UnityEvent OnWinning, OnLoosing;
-    
+
     private void Awake()
     {
         rb = spoon.GetComponent<Rigidbody2D>();
         Time.timeScale = 1f;
-
+        audio = gameObject.GetComponent<AudioSource>();
     }
     void Start()
     {
@@ -47,7 +47,7 @@ public class GameManager : MonoBehaviour
 
     void Update()
     {
-        
+
         isMoving = Input.GetMouseButton(0);
 
         if (gameStarted && !gameEnded)
@@ -61,7 +61,7 @@ public class GameManager : MonoBehaviour
             pos.y = cam.ScreenToWorldPoint(Input.mousePosition).y;
 
         }
-        
+
         if (Input.GetMouseButtonUp(0))
         {
             CheckResult();
@@ -88,7 +88,7 @@ public class GameManager : MonoBehaviour
         float fillAmount = currentTime / totalTime;
         timerImage.value = fillAmount;
 
-        if(fillAmount < 0.35f)
+        if (fillAmount < 0.35f)
         {
             isWinning = false;
             ChangeCofeeColor(0);
@@ -110,7 +110,7 @@ public class GameManager : MonoBehaviour
         if (collision.gameObject.tag == "Spoon" && isMoving)
         {
             StartAnimation(true);
-
+            audio.Play();
             gameStarted = true;
         }
     }
@@ -118,6 +118,7 @@ public class GameManager : MonoBehaviour
     {
         if (collision.gameObject.tag == "Spoon" && isMoving)
         {
+            StopAudio();
             StartAnimation(false);
         }
     }
@@ -133,16 +134,18 @@ public class GameManager : MonoBehaviour
         }
     }
 
-     private void CheckResult()
+    private void CheckResult()
     {
         if (isWinning)
         {
             OnWinning?.Invoke();
+            StopAudio();
             Debug.Log("You Won");
         }
         else
         {
             OnLoosing?.Invoke();
+            StopAudio();
             Debug.Log("You Lose");
         }
 
@@ -162,4 +165,12 @@ public class GameManager : MonoBehaviour
     {
         SceneManager.LoadScene(0);
     }
-}   
+
+    private void StopAudio()
+    {
+        if (audio.isPlaying)
+        {
+            audio.Stop();
+        }
+    }
+}
